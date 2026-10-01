@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mesa-multiagents"
+version = "0.1.0"
+description = "Multi-agent exploration of tunnel maps built on Mesa."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ipyvuetify>=1.6.10,<3",
+    "ipyvue>=1.9,<3",
+    "matplotlib>=3.8",
+    "mesa[viz]>=3.5.0",
+    "networkx>=3.0",
+    "numpy>=1.26",
+    "solara>=1.62.1,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "bandit>=1.7",
+    "playwright>=1.40",
+    "pyright>=1.1",
+    "pytest>=8",
+    "ruff>=0.5",
+]
+
+[tool.setuptools.packages.find]
+include = ["src*"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.pyright]
+typeCheckingMode = "basic"
+extraPaths = ["."]
+include = ["src", "tests"]
+
+[tool.basedpyright]
+typeCheckingMode = "basic"
+extraPaths = ["."]
+include = ["src", "tests"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]
