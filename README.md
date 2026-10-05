@@ -39,3 +39,28 @@ solara run src/app.py
 ```bash
 pytest
 ```
+
+---
+
+## Map File Format
+
+CSV files under `src/maps/` describe the tunnel network. Row 0 holds the
+start cell as `start_x,start_y` (y measured from the top row of the map);
+every subsequent row is a map row read top-to-bottom, where `1` = wall and
+`0` = tunnel.
+
+### Map constraints
+
+To make the policies well-behaved:
+
+- The tunnel network must be a **tree**: corridors never form loops, so any
+  front/left/right search has an unambiguous continuation except at junctions.
+- **Corridors are at most one cell wide.** No 2x2 (or larger) open blocks;
+  each tunnel cell has at most one open neighbor per row/column.
+- Every tunnel row/column forms a single straight segment joining exactly two
+  junction/endpoint cells; junctions (cells with >= 3 open neighbors) are the
+  only branching points.
+- Endpoints (dead ends) are enclosed by walls on three sides.
+
+`conftest.py`'s small map follows the same format (16x19, 36 tunnel cells,
+start at (1, 9)).

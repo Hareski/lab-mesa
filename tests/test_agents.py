@@ -91,29 +91,30 @@ def test_move_forward_and_wall_blocking(small_env_path):
     model = Model(env_path=str(small_env_path), seed=0)
     drone = Drone(model, cell=model.start_cell)
 
-    # In small_env, start is at (2, 3). Cardinal neighbor "S" is (2, 2) which is floor.
-    drone.change_direction("S")
+    # In small_env, start is at (1, 9). Cardinal neighbor "E" is (2, 9) which is floor.
+    drone.change_direction("E")
     moved = drone.move_forward()
     assert moved
-    assert drone.cell.coordinate == (2, 2)
+    assert drone.cell.coordinate == (2, 9)
 
-    # Move north back to start (2, 3)
-    drone.change_direction("N")
+    # Move west back to start (1, 9)
+    drone.change_direction("W")
     moved_back = drone.move_forward()
     assert moved_back
-    assert drone.cell.coordinate == (2, 3)
+    assert drone.cell.coordinate == (1, 9)
 
-    # Moving north again hits wall (2, 4); should fail and keep position
+    # Moving south from start hits a wall (1, 8); should fail and keep position
+    drone.change_direction("S")
     moved_wall = drone.move_forward()
     assert not moved_wall
-    assert drone.cell.coordinate == (2, 3)
+    assert drone.cell.coordinate == (1, 9)
 
 
 def test_north_neighbor_is_wall_robust(small_env_path):
     model = Model(env_path=str(small_env_path), seed=0)
     drone = Drone(model, cell=model.start_cell)
 
-    # In small_env, start is (2, 3) and north neighbor (2, 4) is a wall
+    # In small_env, start is (1, 9) and north neighbor (1, 10) is a wall
     assert drone.north_neighbor_is_wall()
 
 
@@ -128,24 +129,24 @@ def test_unimplemented_observation_raises(small_env_path):
 def test_left_neighbor_is_wall(small_env_path):
     model = Model(env_path=str(small_env_path), seed=0)
     drone = Drone(model, cell=model.start_cell)
-    # In small_env, start is at (2, 3).
-    # North neighbor (2, 4) is a wall; South (2, 2), East (3, 3), West (1, 3) are open tunnels.
+    # In small_env, start is at (1, 9).
+    # North (1, 10), South (1, 8), West (0, 9) are walls; East (2, 9) is an open tunnel.
 
     drone.front = "E"
-    # To left of East is North (2, 4) -> wall
+    # To left of East is North (1, 10) -> wall
     assert drone.left_neighbor_is_wall() is True
 
     drone.front = "N"
-    # To left of North is West (1, 3) -> tunnel
-    assert drone.left_neighbor_is_wall() is False
+    # To left of North is West (0, 9) -> wall
+    assert drone.left_neighbor_is_wall() is True
 
     drone.front = "S"
-    # To left of South is East (3, 3) -> tunnel
+    # To left of South is East (2, 9) -> tunnel
     assert drone.left_neighbor_is_wall() is False
 
     drone.front = "W"
-    # To left of West is South (2, 2) -> tunnel
-    assert drone.left_neighbor_is_wall() is False
+    # To left of West is South (1, 8) -> wall
+    assert drone.left_neighbor_is_wall() is True
 
 
 def test_straight_drone_explores(small_env_path):
@@ -179,7 +180,7 @@ def test_lefthand_drone_explores_simple_and_t_shape():
 
 def test_flooding_drone_explores(small_env_path):
     from src.algo.flooding import FloodingDrone
-    model = Model(env_path=str(small_env_path), seed=42, drone_class=FloodingDrone, n_drones=10)
+    model = Model(env_path=str(small_env_path), seed=42, drone_class=FloodingDrone, n_drones=100)
     step = 0
     while model.running and step < 200:
         model.step()
@@ -194,8 +195,19 @@ def test_drone_light_attribute(small_env_path):
     drone1.toggle_light()
     assert drone1.light is True
 
-    # Neighboring cell (2, 2)
-    drone2 = Drone(model, cell=model.grid[(2, 2)])
+    # Neighboring open cell (2, 9), east of the start
+    drone2 = Drone(model, cell=model.grid[(2, 9)])
     assert drone2.neighbors_have_light_on() is True
     drone1.toggle_light()
     assert drone2.neighbors_have_light_on() is False
+
+
+def test_return_drone(small_env_path):
+    from src.algo.return_base import ReturnDrone
+    model = Model(env_path=str(small_env_path), seed=42, drone_class=ReturnDrone, n_drones=3, require_return=True)
+    steps = 0
+    while model.running and steps < 200:
+        model.step()
+        steps += 1
+    assert model.is_map_fully_explored()
+    assert len(model.active_drones()) == 0

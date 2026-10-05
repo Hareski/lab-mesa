@@ -14,12 +14,39 @@ from mesa.discrete_space import OrthogonalVonNeumannGrid, PropertyLayer
 from src.agents import Base, Drone
 
 if TYPE_CHECKING:
+    from mesa.agent import Agent
     from mesa.discrete_space import Cell
 
 logger = logging.getLogger("model")
 
 MAPS_DIR = os.path.join(os.path.dirname(__file__), "maps")
 DEFAULT_MAP_PATH = os.path.join(MAPS_DIR, "simple.csv")
+
+
+def agent_color(agent: Agent) -> str:
+    """
+    Returns the portrayal color for an agent based on its type and light status:
+    - Base: blue
+    - Drone with both light_red and light_blue: green
+    - Drone with light_red: red
+    - Drone with light_blue: blue
+    - Drone with lights off: gray
+    """
+    if isinstance(agent, Base):
+        return "blue"
+    if getattr(agent, "stopped", False):
+        return "gray"
+    if isinstance(agent, Drone):
+        light_red = getattr(agent, "light_red", getattr(agent, "light", False))
+        light_blue = getattr(agent, "light_blue", getattr(agent, "inter", False))
+        if light_red and light_blue:
+            return "green"
+        if light_red:
+            return "red"
+        if light_blue:
+            return "blue"
+        return "gray"
+    return "gray"
 
 
 class Model(MesaModel):
@@ -141,6 +168,12 @@ class Model(MesaModel):
                 drones.extend(list(agent_set))
         return drones
 
+    def agent_color(self, agent: Agent) -> str:
+        """
+        Returns the portrayal color for an agent.
+        """
+        return agent_color(agent)
+
     def step(self) -> None:
         """
         Execute one step of the simulation.
@@ -161,9 +194,12 @@ class Model(MesaModel):
                 self.running = False
                 return
 
+        # for agent_class, agent_set in list(self.agents_by_type.items()):
+        #     if issubclass(agent_class, Drone):
+        #         agent_set.do("step")
         for agent_class, agent_set in list(self.agents_by_type.items()):
             if issubclass(agent_class, Drone):
-                agent_set.do("step")
+                agent_set.shuffle().do("step")
         if Base in self.agents_by_type:
             self.agents_by_type[Base].do("step")
 

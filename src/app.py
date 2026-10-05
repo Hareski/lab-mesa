@@ -17,7 +17,7 @@ from mesa.visualization.components import AgentPortrayalStyle, PropertyLayerStyl
 
 from src.agents import Base, Drone
 from src.algo import ALGO_MAP
-from src.model import MAPS_DIR, Model
+from src.model import MAPS_DIR, Model, agent_color
 from src.rendering import compute_render_settings
 
 if TYPE_CHECKING:
@@ -45,16 +45,6 @@ def propertylayer_portrayal(layer: PropertyLayer) -> PropertyLayerStyle | None:
             color="green", colorbar=False, alpha=0.5, vmin=0, vmax=1
         )
     return None
-
-
-def agent_color(agent: Agent) -> str:
-    if isinstance(agent, Base):
-        return "blue"
-    if getattr(agent, "stopped", False):
-        return "gray"
-    if isinstance(agent, Drone):
-        return "gold" if getattr(agent, "light", False) else "red"
-    return "gray"
 
 
 def agent_shape(agent: Agent) -> str:
@@ -142,27 +132,27 @@ renderer.post_process = post_process_space
 model_params = {
     "env_file": {
         "type": "Select",
-        "value": "simple.csv",
+        "value": "complex.csv",
         "values": MAP_FILES,
         "label": "Environment",
     },
     "algorithm": {
         "type": "Select",
-        "value": "Random Walk",
+        "value": "Return to Base",
         "values": ALGO_NAMES,
         "label": "Exploration Policy",
     },
     "require_return": {
         "type": "Checkbox",
-        "value": False,
+        "value": True,
         "label": "Require Return",
     },
     "n_drones": {
         "type": "SliderInt",
-        "value": 1,
+        "value": 1000,
         "label": "Number of Drones",
         "min": 1,
-        "max": 500,
+        "max": 1000,
         "step": 1,
     },
 }
@@ -172,7 +162,7 @@ page = SolaraViz(
     renderer,
     model_params=model_params,
     name="Multi-Agent Tunnel Exploration",
-    play_interval=100,
+    play_interval=10,
     render_interval=1,
     width="100%",
     height="90vh",

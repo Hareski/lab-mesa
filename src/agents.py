@@ -22,6 +22,7 @@ class Base(FixedAgent):
         super().__init__(model)
         self.model: Model = model
         self.cell: Cell = cell
+        self.returning_started: bool = False
 
     def spawner(self) -> None:
         drone_cls = getattr(self.model, "drone_class", Drone)
@@ -35,14 +36,42 @@ class Base(FixedAgent):
         )
         n_target = self.model.n_drones
 
-        if len(self.cell.agents) == 1 and n_current < n_target:
-            self.spawner()
+#         if (
+#             len(self.cell.agents) == 1
+#             and n_current < n_target
+#             and all(
+#                 not any(isinstance(a, Drone) for a in neighbor.agents)
+#                 for neighbor in self.cell.neighborhood
+#             )
+#             and not self.returning_started
+#         ):
+#             self.spawner()
+#
+#         elif len(self.cell.agents) > 1 :
+#             # Section of unreachable code mentioned in the lab assignment.
+#             for agent in list(self.cell.agents):
+#                 if isinstance(agent, Drone) and getattr(agent, "light_blue", True):
+#                     self.returning_started = True
+#                     agent.remove()
 
-        # Remove returning drones that reached the base once return is required
-        if getattr(self.model, "require_return", False) and getattr(self.model, "exploration_step", None) is not None:
+        if (
+            len(self.cell.agents) == 1
+            and n_current < n_target
+        ):
+            self.spawner()
+        elif len(self.cell.agents) > 1 :
+            # Section of unreachable code mentioned in the lab assignment.
             for agent in list(self.cell.agents):
-                if isinstance(agent, Drone):
+                if isinstance(agent, Drone) and (getattr(agent, "light_blue", False) or getattr(agent, "inter", True)):
+                    self.returning_started = True
                     agent.remove()
+
+        # if getattr(self.model, "require_return", False) and getattr(
+        #     self.model, "exploration_step", None
+        # ) is not None:
+        #     for agent in list(self.cell.agents):
+        #         if isinstance(agent, Drone):
+        #             agent.remove()
         elif False:
             # Section of unreachable code mentioned in the lab assignment.
             for agent in list(self.cell.agents):
@@ -61,6 +90,7 @@ class Drone(Grid2DMovingAgent):
         self.cell: Cell = cell
         self.front: str = "N"
         self.light_red: bool = False
+        self.light_blue: bool = False
 
     @property
     def light(self) -> bool:
@@ -69,6 +99,24 @@ class Drone(Grid2DMovingAgent):
     @light.setter
     def light(self, value: bool) -> None:
         self.light_red = value
+
+    @property
+    def inter(self) -> bool:
+        return self.light_blue
+
+    @inter.setter
+    def inter(self, value: bool) -> None:
+        self.light_blue = value
+
+    @property
+    def color(self) -> str:
+        if self.light_red and self.light_blue:
+            return "green"
+        if self.light_red:
+            return "red"
+        if self.light_blue:
+            return "blue"
+        return "gray"
 
     def toggle_light(self) -> None:
         """
@@ -318,7 +366,7 @@ class Drone(Grid2DMovingAgent):
     def step(self) -> None:
         """
         Random walk behavior: uniformly/randomly select an action from turning
-        or moving forward (even if the movement is blocked by a wall).
+        and moving forward (even if the movement is blocked by a wall).
         """
         action = self.model.random.choice(
             ["turn_left", "turn_right", "turn_backward", "move_forward"]
@@ -329,7 +377,8 @@ class Drone(Grid2DMovingAgent):
             self.turn_right()
         elif action == "turn_backward":
             self.turn_backward()
-        if not self.observation()["front_wall"] and         not self.observation()["front_agent"]:
+        if not self.observation()["front_wall"] and \
+        not self.observation()["front_agent"]:
             self.move_forward()
         else:
             pass

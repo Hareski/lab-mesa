@@ -27,12 +27,12 @@ def test_default_env_loads_simple():
 def test_custom_env_loads(small_env_path):
     model = Model(env_path=str(small_env_path))
 
-    assert model.width == 5
-    assert model.height == 5
+    assert model.width == 16
+    assert model.height == 19
 
     start_coord = model.start_cell.coordinate
     assert not model.is_wall(start_coord)
-    assert int((model.env_walls == 0).sum()) == 9
+    assert int((model.env_walls == 0).sum()) == 36
 
 
 def test_env_file_selects_map():

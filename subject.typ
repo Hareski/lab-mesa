@@ -200,3 +200,6 @@ The drones will therefore have three possible light states: `Off` (initial deplo
 
 #q[For the next question, you will find it useful to add a new observation to the agent: "is my neighboring cell a base?". Implement it, and update the `observation()` method in `Agent` to include this new observation.]
 
+#q[Write the complete pseudocode and implement a behavior enabling agents to explore the entire tunnel network and subsequently return to their base. For this behavior, you can use any type of local memory (e.g., a list of already taken directions). But do not use any global memory, signal, or GPS.
+]
+
