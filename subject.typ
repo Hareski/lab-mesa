@@ -169,3 +169,5 @@ We are now looking for a new multi-agent exploration method. The assumptions rem
   Implement the drone flooding method on the grid, assuming you have as many drones available as needed to explore the map.
 ]
 
+#q[Measure the exploration time (in number of simulation steps) as well as the total number of deployed drones as a function of map parameters.]
+
