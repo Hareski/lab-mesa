@@ -115,3 +115,9 @@ Identify the four fundamental simulation components in the source code:
 
 #q[Using Mesa's grid methods, how does an agent retrieve the list of its immediate neighboring cells? Complete the method `observation()` in `Agent` to give access to all local observations.]
 
+#exercice[Random Walk]
+
+The agent provided in the skeleton applies a trivial behavior: "do not move".
+
+#q[Implement a first simple "random walk" behavior: at each time step, the drone uniformly/randomly selects an action from turning or moving.]
+

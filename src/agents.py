@@ -165,7 +165,17 @@ class Drone(Grid2DMovingAgent):
 
     def step(self) -> None:
         """
-        The function to specify the agent's behavior.
-        The default skeleton applies a trivial behavior: "do not move".
+        Random walk behavior: uniformly/randomly select an action from turning
+        or moving forward (even if the movement is blocked by a wall).
         """
-        pass
+        action = self.model.random.choice(
+            ["turn_left", "turn_right", "turn_backward", "move_forward"]
+        )
+        if action == "turn_left":
+            self.turn_left()
+        elif action == "turn_right":
+            self.turn_right()
+        elif action == "turn_backward":
+            self.turn_backward()
+        elif action == "move_forward":
+            self.move_forward()
