@@ -196,3 +196,5 @@ The drones will therefore have three possible light states: `Off` (initial deplo
   - in all other cases, the agent follows the previous flooding policy.
 ]
 
+#q[Implement a new behavior for the base. The base should be able to remove from the grid any drone that has returned to it with a `Green` light.]
+
