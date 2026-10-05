@@ -109,3 +109,9 @@ Identify the four fundamental simulation components in the source code:
   What happens if an agent attempts to move to a cell already occupied by another agent?
 ]
 
+#call_teacher[After writing briefly about how the simulation schedules the agents' `step()` methods, call the supervisor, potentially with other peers, to discuss the scheduling strategy and its implications.]
+
+// _Note on scheduling: Sequential execution—calling each agent's `step()` method one after another within a simulation tick—introduces an artificial order of precedence, subtly compromising the fundamental multi-agent principle of true simultaneity and physical concurrency. During this session, as for many multi-agent systems, we adopt this assumption._
+
+#q[Using Mesa's grid methods, how does an agent retrieve the list of its immediate neighboring cells? Complete the method `observation()` in `Agent` to give access to all local observations.]
+
