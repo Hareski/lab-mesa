@@ -175,3 +175,13 @@ def test_lefthand_drone_explores_simple_and_t_shape():
             break
         m_t.step()
     assert m_t.is_map_fully_explored()
+
+
+def test_flooding_drone_explores(small_env_path):
+    from src.algo.flooding import FloodingDrone
+    model = Model(env_path=str(small_env_path), seed=42, drone_class=FloodingDrone, n_drones=10)
+    step = 0
+    while model.running and step < 200:
+        model.step()
+        step += 1
+    assert model.is_map_fully_explored()

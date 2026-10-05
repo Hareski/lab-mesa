@@ -165,3 +165,7 @@ We are now looking for a new multi-agent exploration method. The assumptions rem
   You will also notice a section of unreachable code (inside an always-false condition). This code will be used later, but for now, can you guess what it will enable?
 ]
 
+#q[
+  Implement the drone flooding method on the grid, assuming you have as many drones available as needed to explore the map.
+]
+
