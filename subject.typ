@@ -133,3 +133,14 @@ _Use the random generator provided by Mesa (`random.choice`) rather than standar
 
 #q[Propose and implement a simple improvement over the "random walk" behavior without changing the assumptions (i.e., no memory, no "GPS", no prior map knowledge, and no communication between agents). Compare its efficiency with the random walk in terms of number of steps required to explore all reachable cells.]
 
+#call_teacher[Compare your idea with your peers, then present your consolidated solution to the instructor.]
+
+#exercice[The "Left-Hand" Rule]
+
+#note[
+  *"Left-hand" rule principle.* The agent constantly chooses to move to the "most" left. In doing so, it maintains contact with the wall on its left side.
+]
+
+#q[Write the pseudocode for the algorithm representing this "left-hand" behavior.\
+  _Clearly specify the inputs and outputs of the algorithm._]
+
