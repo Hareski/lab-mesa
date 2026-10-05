@@ -38,7 +38,12 @@ class Base(FixedAgent):
         if len(self.cell.agents) == 1 and n_current < n_target:
             self.spawner()
 
-        if False:
+        # Remove returning drones that reached the base once return is required
+        if getattr(self.model, "require_return", False) and getattr(self.model, "exploration_step", None) is not None:
+            for agent in list(self.cell.agents):
+                if isinstance(agent, Drone):
+                    agent.remove()
+        elif False:
             # Section of unreachable code mentioned in the lab assignment.
             for agent in list(self.cell.agents):
                 if isinstance(agent, Drone):
@@ -55,6 +60,31 @@ class Drone(Grid2DMovingAgent):
         self.model: Model = model
         self.cell: Cell = cell
         self.front: str = "N"
+        self.light_red: bool = False
+
+    @property
+    def light(self) -> bool:
+        return self.light_red
+
+    @light.setter
+    def light(self, value: bool) -> None:
+        self.light_red = value
+
+    def toggle_light(self) -> None:
+        """
+        Toggles the drone's light status.
+        """
+        self.light_red = not self.light_red
+
+    def neighbors_have_light_on(self) -> bool:
+        """
+        Returns True if any drone in neighboring cells has its light On.
+        """
+        for neighbor in self.cell.neighborhood:
+            for agent in neighbor.agents:
+                if isinstance(agent, Drone) and (agent.light_red or getattr(agent, "light", False)):
+                    return True
+        return False
 
     def is_wall(self, cell_or_coord: Cell | tuple[int, ...]) -> bool:
         """

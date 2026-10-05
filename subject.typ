@@ -177,3 +177,15 @@ We are now looking for a new multi-agent exploration method. The assumptions rem
 
 #q[What is the stopping condition of the simulation? Look in the code to see where this termination is implemented. Then, edit it to terminate only when all drones have returned to the base.]
 
+Once the environment has been explored, for the mission to be accomplished, the drones must return to the base and be removed from the simulation. The agents have neither GPS nor a map enabling them to locate the base. We therefore decide to add (only) a state indicator (a simple light) for each drone, observable by its immediate neighbors.
+
+At each simulation step, a drone can:
+- change its light state to `Off`, `Red`, or `Green`;
+- move/turn to a neighboring cell;
+- do both of the above (in one step);
+- or do nothing.
+
+The drones will therefore have three possible light states: `Off` (initial deployment state), `Red`, or `Green`. At each simulation step, drones can choose to move, toggle their light to `Off`, `Red`, `Green`, or do nothing. Once chosen, a light state remains fixed until its next explicit change (no automatic shutoff).
+
+#q[Make the necessary changes to store the light attribute within the Mesa architecture so that an agent can inspect the light status of agents located in neighboring cells. Update the `observation()` method in `Agent` to include the light status.]
+

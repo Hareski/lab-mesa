@@ -185,3 +185,17 @@ def test_flooding_drone_explores(small_env_path):
         model.step()
         step += 1
     assert model.is_map_fully_explored()
+
+
+def test_drone_light_attribute(small_env_path):
+    model = Model(env_path=str(small_env_path), seed=0)
+    drone1 = Drone(model, cell=model.start_cell)
+    assert drone1.light is False
+    drone1.toggle_light()
+    assert drone1.light is True
+
+    # Neighboring cell (2, 2)
+    drone2 = Drone(model, cell=model.grid[(2, 2)])
+    assert drone2.neighbors_have_light_on() is True
+    drone1.toggle_light()
+    assert drone2.neighbors_have_light_on() is False
