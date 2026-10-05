@@ -171,3 +171,9 @@ We are now looking for a new multi-agent exploration method. The assumptions rem
 
 #q[Measure the exploration time (in number of simulation steps) as well as the total number of deployed drones as a function of map parameters.]
 
+#call_teacher[Visualize the behavior of your agents on the `complex` map and verify that it matches expected behavior and is consistent with what your peers observe. Finally, show it to your instructor.]
+
+#exercice[Return to Base]
+
+#q[What is the stopping condition of the simulation? Look in the code to see where this termination is implemented. Then, edit it to terminate only when all drones have returned to the base.]
+

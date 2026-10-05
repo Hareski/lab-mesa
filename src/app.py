@@ -152,6 +152,11 @@ model_params = {
         "values": ALGO_NAMES,
         "label": "Exploration Policy",
     },
+    "require_return": {
+        "type": "Checkbox",
+        "value": False,
+        "label": "Require Return",
+    },
     "n_drones": {
         "type": "SliderInt",
         "value": 1,

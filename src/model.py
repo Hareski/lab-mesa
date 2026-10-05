@@ -34,6 +34,7 @@ class Model(MesaModel):
         env_path: str | None = None,
         env_file: str | None = None,
         drone_class: type[Drone] | None = None,
+        require_return: bool = False,
         algorithm: str | None = None,
     ) -> None:
         super().__init__(rng=seed)
@@ -42,8 +43,13 @@ class Model(MesaModel):
         if algorithm is not None and drone_class is None:
             from src.algo import ALGO_MAP
             drone_class = ALGO_MAP.get(algorithm, Drone)
+            if algorithm == "Return to Base":
+                require_return = True
 
         self.drone_class: type[Drone] = drone_class if drone_class is not None else Drone
+        self.require_return = require_return
+        self.steps_taken: int = 0
+        self.exploration_step: int | None = None
         if env_file:
             self.env_path = os.path.join(MAPS_DIR, env_file)
         else:
@@ -128,14 +134,32 @@ class Model(MesaModel):
                         x, y = agent.cell.coordinate
                         self.explored_cells[y, x] = 1
 
+    def active_drones(self) -> list[Drone]:
+        drones: list[Drone] = []
+        for agent_class, agent_set in self.agents_by_type.items():
+            if issubclass(agent_class, Drone):
+                drones.extend(list(agent_set))
+        return drones
+
     def step(self) -> None:
         """
         Execute one step of the simulation.
         """
+        self.steps_taken += 1
+
+        if self.is_map_fully_explored() and self.exploration_step is None:
+            self.exploration_step = self.steps_taken
+            logger.info("Map fully explored at step %d!", self.steps_taken)
+
         if self.is_map_fully_explored():
-            logger.info("Exploration finished!")
-            self.running = False
-            return
+            if not self.require_return:
+                logger.info("Exploration finished!")
+                self.running = False
+                return
+            if len(self.active_drones()) == 0 and self.steps_taken > 1:
+                logger.info("All drones returned to base. Mission finished!")
+                self.running = False
+                return
 
         for agent_class, agent_set in list(self.agents_by_type.items()):
             if issubclass(agent_class, Drone):
