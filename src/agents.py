@@ -112,11 +112,115 @@ class Drone(Grid2DMovingAgent):
             return True
         return self.model.is_wall(north_cell)
 
+    def relative_to_cardinal(self, rel_dir: str) -> str:
+        """
+        Maps an agent-relative direction (LEFT, RIGHT, FORWARD, BACKWARD)
+        to a cardinal direction based on self.front.
+        """
+        mapping = {
+            "N": {"LEFT": "W", "RIGHT": "E", "FORWARD": "N", "BACKWARD": "S", "FRONT": "N", "BACK": "S"},
+            "S": {"LEFT": "E", "RIGHT": "W", "FORWARD": "S", "BACKWARD": "N", "FRONT": "S", "BACK": "N"},
+            "E": {"LEFT": "N", "RIGHT": "S", "FORWARD": "E", "BACKWARD": "W", "FRONT": "E", "BACK": "W"},
+            "W": {"LEFT": "S", "RIGHT": "N", "FORWARD": "W", "BACKWARD": "E", "FRONT": "W", "BACK": "E"},
+        }
+        rel_key = rel_dir.upper()
+        if rel_key not in mapping[self.front]:
+            raise ValueError(f"Invalid relative direction: {rel_dir}")
+        return mapping[self.front][rel_key]
+
+    def left_neighbor_is_wall(self) -> bool:
+        """
+        Returns True if the cell to the agent's left is a wall or boundary, False otherwise.
+        """
+        left_dir = self.relative_to_cardinal("LEFT")
+        cell = self.get_cardinal_neighbor(left_dir)
+        if cell is None:
+            return True
+        return self.model.is_wall(cell)
+
+    def front_neighbor_is_wall(self) -> bool:
+        """
+        Returns True if the cell directly in front is a wall or boundary.
+        """
+        cell = self.get_cardinal_neighbor(self.front)
+        if cell is None:
+            return True
+        return self.model.is_wall(cell)
+
+    def right_neighbor_is_wall(self) -> bool:
+        """
+        Returns True if the cell to the agent's right is a wall or boundary.
+        """
+        right_dir = self.relative_to_cardinal("RIGHT")
+        cell = self.get_cardinal_neighbor(right_dir)
+        if cell is None:
+            return True
+        return self.model.is_wall(cell)
+
+    def back_neighbor_is_wall(self) -> bool:
+        """
+        Returns True if the cell directly behind is a wall or boundary.
+        """
+        back_dir = self.relative_to_cardinal("BACKWARD")
+        cell = self.get_cardinal_neighbor(back_dir)
+        if cell is None:
+            return True
+        return self.model.is_wall(cell)
+
+    def left_neighbor_has_drone(self) -> bool:
+        """
+        Returns True if the cell to the agent's left has a drone, False otherwise.
+        """
+        left_dir = self.relative_to_cardinal("LEFT")
+        cell = self.get_cardinal_neighbor(left_dir)
+        if cell is None:
+            return False
+        return any(isinstance(agent, Drone) for agent in cell.agents)
+
+    def front_neighbor_has_drone(self) -> bool:
+        """
+        Returns True if the cell directly in front has a drone, False otherwise.
+        """
+        cell = self.get_cardinal_neighbor(self.front)
+        if cell is None:
+            return False
+        return any(isinstance(agent, Drone) for agent in cell.agents)
+
+    def right_neighbor_has_drone(self) -> bool:
+        """
+        Returns True if the cell to the agent's right has a drone, False otherwise.
+        """
+        right_dir = self.relative_to_cardinal("RIGHT")
+        cell = self.get_cardinal_neighbor(right_dir)
+        if cell is None:
+            return False
+        return any(isinstance(agent, Drone) for agent in cell.agents)
+
+    def back_neighbor_has_drone(self) -> bool:
+        """
+        Returns True if the cell directly behind has a drone, False otherwise.
+        """
+        back_dir = self.relative_to_cardinal("BACKWARD")
+        cell = self.get_cardinal_neighbor(back_dir)
+        if cell is None:
+            return False
+        return any(isinstance(agent, Drone) for agent in cell.agents)
+
     def observation(self) -> dict:
         """
         Returns the observation of the drone.
         """
-        raise NotImplementedError("To be implemented.")
+        return {
+            "front": self.front,
+            "left_wall": self.left_neighbor_is_wall(),
+            "front_wall": self.front_neighbor_is_wall(),
+            "right_wall": self.right_neighbor_is_wall(),
+            "north_wall": self.north_neighbor_is_wall(),
+            "left_agent": self.left_neighbor_has_drone(),
+            "front_agent": self.front_neighbor_has_drone(),
+            "right_agent": self.right_neighbor_has_drone(),
+            "back_agent": self.back_neighbor_has_drone(),
+        }
 
     def change_direction(self, new_direction: str) -> None:
         """
@@ -177,5 +281,8 @@ class Drone(Grid2DMovingAgent):
             self.turn_right()
         elif action == "turn_backward":
             self.turn_backward()
-        elif action == "move_forward":
+        if not self.observation()["front_wall"] and         not self.observation()["front_agent"]:
             self.move_forward()
+        else:
+            pass
+        return

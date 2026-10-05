@@ -125,3 +125,9 @@ _Use the random generator provided by Mesa (`random.choice`) rather than standar
 
 #q[Run the simulation several times on the provided map, and record the average number of steps required to explore all reachable cells.]
 
+#q[
+  The provided skeleton provides a method `north_neighbor_is_wall()`. Implement a helper function `left_neighbor_is_wall()` that returns the agent's observation in the agent's relative coordinate system.
+
+  _Make sure not to modify the core model: only implement the relative observation, which can be inferred from the agent's current position, orientation, and the map. For the remainder of the session, you are strongly encouraged to write modular helper functions like this._
+]
+

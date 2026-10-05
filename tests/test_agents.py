@@ -123,3 +123,26 @@ def test_unimplemented_observation_raises(small_env_path):
 
     with pytest.raises(NotImplementedError):
         drone.observation()
+
+
+def test_left_neighbor_is_wall(small_env_path):
+    model = Model(env_path=str(small_env_path), seed=0)
+    drone = Drone(model, cell=model.start_cell)
+    # In small_env, start is at (2, 3).
+    # North neighbor (2, 4) is a wall; South (2, 2), East (3, 3), West (1, 3) are open tunnels.
+
+    drone.front = "E"
+    # To left of East is North (2, 4) -> wall
+    assert drone.left_neighbor_is_wall() is True
+
+    drone.front = "N"
+    # To left of North is West (1, 3) -> tunnel
+    assert drone.left_neighbor_is_wall() is False
+
+    drone.front = "S"
+    # To left of South is East (3, 3) -> tunnel
+    assert drone.left_neighbor_is_wall() is False
+
+    drone.front = "W"
+    # To left of West is South (2, 2) -> tunnel
+    assert drone.left_neighbor_is_wall() is False
