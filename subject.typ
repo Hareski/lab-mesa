@@ -144,3 +144,5 @@ _Use the random generator provided by Mesa (`random.choice`) rather than standar
 #q[Write the pseudocode for the algorithm representing this "left-hand" behavior.\
   _Clearly specify the inputs and outputs of the algorithm._]
 
+#q[Implement this policy. Validate its execution on the provided map, then test it on a simple custom "T"-shaped map added by you.]
+

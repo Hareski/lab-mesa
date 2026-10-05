@@ -156,3 +156,22 @@ def test_straight_drone_explores(small_env_path):
         model.step()
         step += 1
     assert model.is_map_fully_explored()
+
+
+def test_lefthand_drone_explores_simple_and_t_shape():
+    from src.algo.lefthand import LeftHandDrone
+    # Test simple map
+    m_simple = Model(env_file="simple.csv", drone_class=LeftHandDrone, seed=0)
+    for _ in range(100):
+        if not m_simple.running:
+            break
+        m_simple.step()
+    assert m_simple.is_map_fully_explored()
+
+    # Test T-shape map
+    m_t = Model(env_file="t_shape.csv", drone_class=LeftHandDrone, seed=0)
+    for _ in range(30):
+        if not m_t.running:
+            break
+        m_t.step()
+    assert m_t.is_map_fully_explored()
