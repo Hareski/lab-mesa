@@ -89,3 +89,23 @@ Each agent is a drone occupying a single cell. Each agent has a discrete $(x, y)
   Give the exact and complete observations of both drones.
 ]
 
+Clone/retrieve the project skeleton we will be working on from:\
+#linkwithicon("https://github.com/hareski/lab-mesa")\
+_We recommend forking the repository and working on your own fork._
+
+Launch the visualization according to the instructions in `README.md`.
+Observe in the visualization the map, the base, and the drone.
+
+Identify the four fundamental simulation components in the source code:
+1. The *model*: manages global state, the grid, and scheduling.
+2. The *grid*: discrete spatial structure hosting cells and agents.
+3. The *agent*: encapsulates the robot's internal state and its behavioral `step()` method.
+4. The *simulation loop*: activation sequence that increments the global clock tick.
+
+#q[
+  The `step()` method defines the agent's behavior.
+  Explain briefly how the simulation schedules the agents' `step()` methods.
+  Are the calls to `step()` sequential or concurrent?
+  What happens if an agent attempts to move to a cell already occupied by another agent?
+]
+
