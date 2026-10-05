@@ -267,6 +267,24 @@ class Drone(Grid2DMovingAgent):
             return True
         return False
 
+    def change_cell_and_direction(self, new_cell: Cell) -> None:
+        """
+        Changes orientation based on movement delta and moves to new cell.
+        """
+        old_x, old_y = self.cell.coordinate
+        new_x, new_y = new_cell.coordinate
+
+        if new_x > old_x:
+            self.front = "E"
+        elif new_x < old_x:
+            self.front = "W"
+        elif new_y > old_y:
+            self.front = "N"
+        elif new_y < old_y:
+            self.front = "S"
+
+        self.change_cell(new_cell)
+
     def step(self) -> None:
         """
         Random walk behavior: uniformly/randomly select an action from turning

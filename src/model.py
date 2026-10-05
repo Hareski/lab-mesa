@@ -33,11 +33,17 @@ class Model(MesaModel):
         seed: int | None = None,
         env_path: str | None = None,
         env_file: str | None = None,
-        drone_class: type[Drone] = Drone,
+        drone_class: type[Drone] | None = None,
+        algorithm: str | None = None,
     ) -> None:
         super().__init__(rng=seed)
         self.n_drones = n_drones
-        self.drone_class = drone_class
+
+        if algorithm is not None and drone_class is None:
+            from src.algo import ALGO_MAP
+            drone_class = ALGO_MAP.get(algorithm, Drone)
+
+        self.drone_class: type[Drone] = drone_class if drone_class is not None else Drone
         if env_file:
             self.env_path = os.path.join(MAPS_DIR, env_file)
         else:

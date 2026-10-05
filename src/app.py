@@ -16,6 +16,7 @@ from mesa.visualization import SolaraViz, SpaceRenderer
 from mesa.visualization.components import AgentPortrayalStyle, PropertyLayerStyle
 
 from src.agents import Base, Drone
+from src.algo import ALGO_MAP
 from src.model import MAPS_DIR, Model
 from src.rendering import compute_render_settings
 
@@ -27,10 +28,11 @@ if TYPE_CHECKING:
 logger = logging.getLogger("app")
 logger.setLevel(logging.INFO)
 
+MAP_FILES = sorted(p.name for p in Path(MAPS_DIR).glob("*.csv"))
+ALGO_NAMES = list(ALGO_MAP.keys())
+
 model = Model()
 render_settings = compute_render_settings(model.width, model.height)
-
-MAP_FILES = sorted(p.name for p in Path(MAPS_DIR).glob("*.csv"))
 
 
 def propertylayer_portrayal(layer: PropertyLayer) -> PropertyLayerStyle | None:
@@ -48,8 +50,10 @@ def propertylayer_portrayal(layer: PropertyLayer) -> PropertyLayerStyle | None:
 def agent_color(agent: Agent) -> str:
     if isinstance(agent, Base):
         return "blue"
+    if getattr(agent, "stopped", False):
+        return "gray"
     if isinstance(agent, Drone):
-        return "red"
+        return "gold" if getattr(agent, "light", False) else "red"
     return "gray"
 
 
@@ -142,6 +146,12 @@ model_params = {
         "values": MAP_FILES,
         "label": "Environment",
     },
+    "algorithm": {
+        "type": "Select",
+        "value": "Random Walk",
+        "values": ALGO_NAMES,
+        "label": "Exploration Policy",
+    },
     "n_drones": {
         "type": "SliderInt",
         "value": 1,
@@ -156,7 +166,7 @@ page = SolaraViz(
     model,
     renderer,
     model_params=model_params,
-    name="Mesa",
+    name="Multi-Agent Tunnel Exploration",
     play_interval=100,
     render_interval=1,
     width="100%",

@@ -131,3 +131,5 @@ _Use the random generator provided by Mesa (`random.choice`) rather than standar
   _Make sure not to modify the core model: only implement the relative observation, which can be inferred from the agent's current position, orientation, and the map. For the remainder of the session, you are strongly encouraged to write modular helper functions like this._
 ]
 
+#q[Propose and implement a simple improvement over the "random walk" behavior without changing the assumptions (i.e., no memory, no "GPS", no prior map knowledge, and no communication between agents). Compare its efficiency with the random walk in terms of number of steps required to explore all reachable cells.]
+

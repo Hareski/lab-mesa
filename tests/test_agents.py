@@ -146,3 +146,13 @@ def test_left_neighbor_is_wall(small_env_path):
     drone.front = "W"
     # To left of West is South (2, 2) -> tunnel
     assert drone.left_neighbor_is_wall() is False
+
+
+def test_straight_drone_explores(small_env_path):
+    from src.algo.straight import StraightDrone
+    model = Model(env_path=str(small_env_path), seed=42, drone_class=StraightDrone)
+    step = 0
+    while model.running and step < 500:
+        model.step()
+        step += 1
+    assert model.is_map_fully_explored()
