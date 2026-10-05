@@ -198,3 +198,5 @@ The drones will therefore have three possible light states: `Off` (initial deplo
 
 #q[Implement a new behavior for the base. The base should be able to remove from the grid any drone that has returned to it with a `Green` light.]
 
+#q[For the next question, you will find it useful to add a new observation to the agent: "is my neighboring cell a base?". Implement it, and update the `observation()` method in `Agent` to include this new observation.]
+
