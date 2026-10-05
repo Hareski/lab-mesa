@@ -1,0 +1,87 @@
+#import "template.typ": *
+#import "@preview/cetz:0.4.2": canvas, draw
+#import draw: circle, content, line, mark, rect
+
+#show: conf.with(
+  title: [Multi-Agent Models with Mesa],
+  subtitle: [SMR — Multi-Robot Systems],
+  l: [A. Himeur — 2026],
+  r: [INSA Lyon],
+)
+
+#intro[
+  During this lab session, you will get hands-on experience with Mesa, an open-source Python framework dedicated to multi-agent modeling and simulation.
+
+  You will progressively build different exploration policies for a 2D grid tunnel network:
+  1. Single-agent approaches: random walk, then the left-hand rule.
+  2. An approach where multiple agents cooperate to quickly explore the entire grid.
+  3. An approach where multiple agents cooperate with simple signals to return to the base.
+  4. Finally, you will formalize the exploration task for reinforcement learning.
+
+  _*Recommendations:* The use of documentation, forums, and language models is encouraged to guide you with syntax and understanding concepts. However, it is essential that you design, write code, test, and analyze yourselves._
+]
+
+#exercice[Getting Started]
+
+The goal of this lab session is to deploy a fleet of autonomous drones as a _Multi-Agent System_ (MAS) to explore an unknown underground tunnel network. The agents operate in a GPS-denied, unmapped environment with no prior knowledge of the layout or their absolute global coordinates. To simplify, we model the tunnel network as a 2D grid in which drones move from cell to cell.
+
+During this session, we will respect the main properties of multi-agent systems:
+- Each drone controls its own internal state and independently selects its actions.
+- Agents do not have complete, global knowledge of the environment.
+
+#figure(
+  canvas(length: 0.6cm, {
+    import draw: *
+    let rows = (
+      "############",
+      "#B#      # #",
+      "# # # ## # #",
+      "# # # ## # #",
+      "# # # ##   #",
+      "# ### ## # #",
+      "#     ## # #",
+      "############",
+    )
+    for (y, row) in rows.enumerate() {
+      for (x, ch) in row.split("").enumerate() {
+        let a = (x, (rows.len() - 1 - y))
+        let b = (x + 1, (rows.len() - y))
+        let a_s = (x + 0.15, (rows.len() - 1 - y + 0.15))
+        let b_s = (x + 1 - 0.15, (rows.len() - y - 0.15))
+
+        if ch == "B" {
+          rect(a, b, fill: rgb("#eef2f7"), stroke: luma(160))
+          rect(a_s, b_s, fill: rgb("#3f7f80"), stroke: luma(160))
+        } else if ch != " " {
+          rect(a, b, fill: rgb("#3d4a5c"), stroke: luma(20))
+        } else {
+          rect(a, b, fill: rgb("#eef2f7"), stroke: luma(160))
+        }
+      }
+    }
+    let dirs = (E: (1, 0), N: (0, 1), W: (-1, 0), S: (0, -1))
+    for drone in (
+      (cell: (4, 6), dir: "E", color: rgb("#e52713")),
+      (cell: (11, 2), dir: "N", color: rgb("#e52713")),
+    ) {
+      let (cx, cy) = (drone.cell.at(0) + 0.5, drone.cell.at(1) + 0.5)
+      let (vx, vy) = dirs.at(drone.dir)
+      let (px, py) = (-vy, vx)
+      let p = (cx + 0.38 * vx, cy + 0.38 * vy)
+      let q = (cx - 0.22 * vx + 0.22 * px, cy - 0.22 * vy + 0.22 * py)
+      let r = (cx - 0.22 * vx - 0.22 * px, cy - 0.22 * vy - 0.22 * py)
+      draw.line(p, q, r, close: true, fill: drone.color, stroke: 0.4pt + luma(20))
+    }
+  }),
+)
+
+#note[
+  The provided skeleton loads the map from a CSV file located in `multi_agent/envs/`. Its first line gives the $(x,y)$ coordinates of the base, and the following lines describe the map read from bottom to top: 0 for a traversable tunnel, 1 for an impassable wall. The base is therefore an ordinary tunnel cell, but the only entry and exit point of the tunnel network.
+]
+
+Each agent is a drone occupying a single cell. Each agent has a discrete $(x, y)$ position and an orientation facing _North_, _South_, _East_, or _West_. At each time step, it chooses an action: _turn backward_, _move left_, _move right_, _move forward_, or remain stationary (_stay_). If the agent chooses to move to the left or right, its orientation will change according to the direction of movement. On the illustration and the project visualization, the direction of the drawn triangle indicates the drone's current orientation. Each agent can observe its orientation, as well as its von Neumann neighborhood (or 4-neighborhood for north, south, east, west) states among `Wall`, `Tunnel`, or `Agent`.
+
+#q[
+  In the illustration above, identify the base and the drones. Give their respective positions and orientations.
+]
+
