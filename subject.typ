@@ -121,3 +121,7 @@ The agent provided in the skeleton applies a trivial behavior: "do not move".
 
 #q[Implement a first simple "random walk" behavior: at each time step, the drone uniformly/randomly selects an action from turning or moving.]
 
+_Use the random generator provided by Mesa (`random.choice`) rather than standard library `random`: this ensures simulation reproducibility from a seed._
+
+#q[Run the simulation several times on the provided map, and record the average number of steps required to explore all reachable cells.]
+
