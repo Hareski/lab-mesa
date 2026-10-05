@@ -203,3 +203,6 @@ The drones will therefore have three possible light states: `Off` (initial deplo
 #q[Write the complete pseudocode and implement a behavior enabling agents to explore the entire tunnel network and subsequently return to their base. For this behavior, you can use any type of local memory (e.g., a list of already taken directions). But do not use any global memory, signal, or GPS.
 ]
 
+#call_teacher[We intentionally leave the above question open to encourage you to first brainstorm a possible solution, discuss it with your peers, and finally ask the instructor for guidance. A first step could be to change the color of the drone depending on some property.]
+
+#q[Measure the total mission time ($T_"total" = T_"exploration" + T_"return"$). Did the drones need a map or memory to return?]
