@@ -152,3 +152,16 @@ _Use the random generator provided by Mesa (`random.choice`) rather than standar
   _Hint: When aiming to prove or disprove a property such as "the algorithm explores all reachable cells", what is usually best to look for first?_
 ]
 
+#exercice[Exploration by Flooding]
+
+We are now looking for a new multi-agent exploration method. The assumptions remain unchanged: no memory, no GPS, no map, etc. The idea is to shift intelligence from the individual drone to the fleet: multiple agents cooperate to cover all tunnels, and the additional information available to them comes not from an individual memory, but from other drones encountered along their path. We will implement this idea using a true multi-agent approach where all agents share the exact same behavior.
+
+#note[
+  *Flooding principle.* The idea is to explore the tunnel by leaving a drone on each cell that has already been explored and should no longer be visited (roughly, dead ends) to prevent exploration loops.
+]
+
+#q[
+  How do agents spawn at the base? Look in the code to see where this is implemented.
+  You will also notice a section of unreachable code (inside an always-false condition). This code will be used later, but for now, can you guess what it will enable?
+]
+
