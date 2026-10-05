@@ -189,3 +189,10 @@ The drones will therefore have three possible light states: `Off` (initial deplo
 
 #q[Make the necessary changes to store the light attribute within the Mesa architecture so that an agent can inspect the light status of agents located in neighboring cells. Update the `observation()` method in `Agent` to include the light status.]
 
+#q[
+  Test your model by implementing a simple behavior:
+  - 1% of the time and at random, the agent toggles its light (to `Off`, `Red`, or `Green`);
+  - if an agent observes that its light is `Off` while one of its neighbors has its light `Red`, it turns its light `Red`;
+  - in all other cases, the agent follows the previous flooding policy.
+]
+
