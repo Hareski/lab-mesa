@@ -146,3 +146,9 @@ _Use the random generator provided by Mesa (`random.choice`) rather than standar
 
 #q[Implement this policy. Validate its execution on the provided map, then test it on a simple custom "T"-shaped map added by you.]
 
+#q[
+  An exploration method is said to be complete if it guarantees visiting all reachable cells in finite time.
+  Is the left-hand method a complete exploration method?\
+  _Hint: When aiming to prove or disprove a property such as "the algorithm explores all reachable cells", what is usually best to look for first?_
+]
+
