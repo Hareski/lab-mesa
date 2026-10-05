@@ -85,3 +85,7 @@ Each agent is a drone occupying a single cell. Each agent has a discrete $(x, y)
   In the illustration above, identify the base and the drones. Give their respective positions and orientations.
 ]
 
+#q[
+  Give the exact and complete observations of both drones.
+]
+
