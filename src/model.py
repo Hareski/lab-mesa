@@ -133,7 +133,7 @@ class Model(MesaModel):
 
         for agent_class, agent_set in list(self.agents_by_type.items()):
             if issubclass(agent_class, Drone):
-                agent_set.do("step")
+                agent_set.shuffle().do("step")
         if Base in self.agents_by_type:
             self.agents_by_type[Base].do("step")
 
