@@ -112,11 +112,115 @@ class Drone(Grid2DMovingAgent):
             return True
         return self.model.is_wall(north_cell)
 
+    def relative_to_cardinal(self, rel_dir: str) -> str:
+        """
+        Maps an agent-relative direction (LEFT, RIGHT, FORWARD, BACKWARD)
+        to a cardinal direction based on self.front.
+        """
+        mapping = {
+            "N": {"LEFT": "W", "RIGHT": "E", "FORWARD": "N", "BACKWARD": "S", "FRONT": "N", "BACK": "S"},
+            "S": {"LEFT": "E", "RIGHT": "W", "FORWARD": "S", "BACKWARD": "N", "FRONT": "S", "BACK": "N"},
+            "E": {"LEFT": "N", "RIGHT": "S", "FORWARD": "E", "BACKWARD": "W", "FRONT": "E", "BACK": "W"},
+            "W": {"LEFT": "S", "RIGHT": "N", "FORWARD": "W", "BACKWARD": "E", "FRONT": "W", "BACK": "E"},
+        }
+        rel_key = rel_dir.upper()
+        if rel_key not in mapping[self.front]:
+            raise ValueError(f"Invalid relative direction: {rel_dir}")
+        return mapping[self.front][rel_key]
+
+    def left_neighbor_is_wall(self) -> bool:
+        """
+        Returns True if the cell to the agent's left is a wall or boundary, False otherwise.
+        """
+        left_dir = self.relative_to_cardinal("LEFT")
+        cell = self.get_cardinal_neighbor(left_dir)
+        if cell is None:
+            return True
+        return self.model.is_wall(cell)
+
+    def front_neighbor_is_wall(self) -> bool:
+        """
+        Returns True if the cell directly in front is a wall or boundary.
+        """
+        cell = self.get_cardinal_neighbor(self.front)
+        if cell is None:
+            return True
+        return self.model.is_wall(cell)
+
+    def right_neighbor_is_wall(self) -> bool:
+        """
+        Returns True if the cell to the agent's right is a wall or boundary.
+        """
+        right_dir = self.relative_to_cardinal("RIGHT")
+        cell = self.get_cardinal_neighbor(right_dir)
+        if cell is None:
+            return True
+        return self.model.is_wall(cell)
+
+    def back_neighbor_is_wall(self) -> bool:
+        """
+        Returns True if the cell directly behind is a wall or boundary.
+        """
+        back_dir = self.relative_to_cardinal("BACKWARD")
+        cell = self.get_cardinal_neighbor(back_dir)
+        if cell is None:
+            return True
+        return self.model.is_wall(cell)
+
+    def left_neighbor_has_drone(self) -> bool:
+        """
+        Returns True if the cell to the agent's left has a drone, False otherwise.
+        """
+        left_dir = self.relative_to_cardinal("LEFT")
+        cell = self.get_cardinal_neighbor(left_dir)
+        if cell is None:
+            return False
+        return any(isinstance(agent, Drone) for agent in cell.agents)
+
+    def front_neighbor_has_drone(self) -> bool:
+        """
+        Returns True if the cell directly in front has a drone, False otherwise.
+        """
+        cell = self.get_cardinal_neighbor(self.front)
+        if cell is None:
+            return False
+        return any(isinstance(agent, Drone) for agent in cell.agents)
+
+    def right_neighbor_has_drone(self) -> bool:
+        """
+        Returns True if the cell to the agent's right has a drone, False otherwise.
+        """
+        right_dir = self.relative_to_cardinal("RIGHT")
+        cell = self.get_cardinal_neighbor(right_dir)
+        if cell is None:
+            return False
+        return any(isinstance(agent, Drone) for agent in cell.agents)
+
+    def back_neighbor_has_drone(self) -> bool:
+        """
+        Returns True if the cell directly behind has a drone, False otherwise.
+        """
+        back_dir = self.relative_to_cardinal("BACKWARD")
+        cell = self.get_cardinal_neighbor(back_dir)
+        if cell is None:
+            return False
+        return any(isinstance(agent, Drone) for agent in cell.agents)
+
     def observation(self) -> dict:
         """
         Returns the observation of the drone.
         """
-        raise NotImplementedError("To be implemented.")
+        return {
+            "front": self.front,
+            "left_wall": self.left_neighbor_is_wall(),
+            "front_wall": self.front_neighbor_is_wall(),
+            "right_wall": self.right_neighbor_is_wall(),
+            "north_wall": self.north_neighbor_is_wall(),
+            "left_agent": self.left_neighbor_has_drone(),
+            "front_agent": self.front_neighbor_has_drone(),
+            "right_agent": self.right_neighbor_has_drone(),
+            "back_agent": self.back_neighbor_has_drone(),
+        }
 
     def change_direction(self, new_direction: str) -> None:
         """
@@ -163,9 +267,41 @@ class Drone(Grid2DMovingAgent):
             return True
         return False
 
+    def change_cell_and_direction(self, new_cell: Cell) -> None:
+        """
+        Changes orientation based on movement delta and moves to new cell.
+        """
+        old_x, old_y = self.cell.coordinate
+        new_x, new_y = new_cell.coordinate
+
+        if new_x > old_x:
+            self.front = "E"
+        elif new_x < old_x:
+            self.front = "W"
+        elif new_y > old_y:
+            self.front = "N"
+        elif new_y < old_y:
+            self.front = "S"
+
+        self.change_cell(new_cell)
+
     def step(self) -> None:
         """
-        The function to specify the agent's behavior.
-        The default skeleton applies a trivial behavior: "do not move".
+        Random walk behavior: uniformly/randomly select an action from turning
+        and moving forward (even if the movement is blocked by a wall).
         """
-        pass
+        action = self.model.random.choice(
+            ["turn_left", "turn_right", "turn_backward", "move_forward"]
+        )
+        if action == "turn_left":
+            self.turn_left()
+        elif action == "turn_right":
+            self.turn_right()
+        elif action == "turn_backward":
+            self.turn_backward()
+        if not self.observation()["front_wall"] and \
+        not self.observation()["front_agent"]:
+            self.move_forward()
+        else:
+            pass
+        return
