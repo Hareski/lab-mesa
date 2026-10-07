@@ -118,10 +118,14 @@ class Drone(Grid2DMovingAgent):
         to a cardinal direction based on self.front.
         """
         mapping = {
-            "N": {"LEFT": "W", "RIGHT": "E", "FORWARD": "N", "BACKWARD": "S", "FRONT": "N", "BACK": "S"},
-            "S": {"LEFT": "E", "RIGHT": "W", "FORWARD": "S", "BACKWARD": "N", "FRONT": "S", "BACK": "N"},
-            "E": {"LEFT": "N", "RIGHT": "S", "FORWARD": "E", "BACKWARD": "W", "FRONT": "E", "BACK": "W"},
-            "W": {"LEFT": "S", "RIGHT": "N", "FORWARD": "W", "BACKWARD": "E", "FRONT": "W", "BACK": "E"},
+            "N": {"LEFT": "W", "RIGHT": "E", "FORWARD": "N",
+                "BACKWARD": "S", "FRONT": "N", "BACK": "S"},
+            "S": {"LEFT": "E", "RIGHT": "W", "FORWARD": "S",
+                "BACKWARD": "N", "FRONT": "S", "BACK": "N"},
+            "E": {"LEFT": "N", "RIGHT": "S", "FORWARD": "E",
+                "BACKWARD": "W", "FRONT": "E", "BACK": "W"},
+            "W": {"LEFT": "S", "RIGHT": "N", "FORWARD": "W",
+                "BACKWARD": "E", "FRONT": "W", "BACK": "E"},
         }
         rel_key = rel_dir.upper()
         if rel_key not in mapping[self.front]:
@@ -130,7 +134,8 @@ class Drone(Grid2DMovingAgent):
 
     def left_neighbor_is_wall(self) -> bool:
         """
-        Returns True if the cell to the agent's left is a wall or boundary, False otherwise.
+        Returns True if the cell to the agent's left is a wall or boundary,
+        False otherwise.
         """
         left_dir = self.relative_to_cardinal("LEFT")
         cell = self.get_cardinal_neighbor(left_dir)

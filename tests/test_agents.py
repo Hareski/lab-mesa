@@ -1,5 +1,3 @@
-import pytest
-
 from src.agents import Base, Drone
 from src.model import Model
 
@@ -117,9 +115,21 @@ def test_north_neighbor_is_wall_robust(small_env_path):
     assert drone.north_neighbor_is_wall()
 
 
-def test_unimplemented_observation_raises(small_env_path):
+def test_observation_returns_local_view(small_env_path):
     model = Model(env_path=str(small_env_path), seed=0)
     drone = Drone(model, cell=model.start_cell)
 
-    with pytest.raises(NotImplementedError):
-        drone.observation()
+    obs = drone.observation()
+
+    assert isinstance(obs, dict)
+    assert obs["front"] == "N"
+    # Start is (2, 3): north neighbor (2, 4) is a wall, the rest are tunnels.
+    assert obs["front_wall"] is True
+    assert obs["north_wall"] is True
+    assert obs["left_wall"] is False
+    assert obs["right_wall"] is False
+    # No other drone is on the map.
+    assert obs["left_agent"] is False
+    assert obs["front_agent"] is False
+    assert obs["right_agent"] is False
+    assert obs["back_agent"] is False
